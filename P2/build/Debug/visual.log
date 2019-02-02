@@ -1,0 +1,11 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(376,5): warning MSB8004: El directorio Intermediate no termina con una barra diagonal final. Esta instancia de compilación agregará la barra diagonal porque es necesaria para que se pueda evaluar correctamente el directorio Intermediate.
+  image.cpp
+e:\documentos\upf\year3\t2\cg\p2\src\framework\image.cpp(247): warning C4244: 'inicializando': conversión de 'int' a 'float'; posible pérdida de datos
+e:\documentos\upf\year3\t2\cg\p2\src\framework\image.cpp(248): warning C4244: 'inicializando': conversión de 'int' a 'float'; posible pérdida de datos
+e:\documentos\upf\year3\t2\cg\p2\src\framework\image.cpp(257): warning C4244: 'inicializando': conversión de 'int' a 'float'; posible pérdida de datos
+e:\documentos\upf\year3\t2\cg\p2\src\framework\image.cpp(258): warning C4244: 'inicializando': conversión de 'int' a 'float'; posible pérdida de datos
+e:\documentos\upf\year3\t2\cg\p2\src\framework\image.cpp(262): warning C4244: 'argumento': conversión de 'float' a 'unsigned int'; posible pérdida de datos
+application.obj : warning LNK4075: se omite '/EDITANDCONTINUE' debido a la especificación '/INCREMENTAL:NO'
+  visual.vcxproj -> E:\Documentos\UPF\YEAR3\T2\CG\P2\visual\visual\..\..\build\ComputerGraphics.exe
+  0 archivo(s) copiado(s)
+  0 archivo(s) copiado(s)
