@@ -89,10 +89,11 @@ public:
 	float abs(float n);
 
 	void drawLineDDA(int posFirstX, int posFirstY, int posSecondX, int posSecondY, Color c);
-	void drawLineB(int posFirstX, int posFirstY, int posSecondX, int posSecondY, Color c);
+	void drawLineBresenham(int posFirstX, int posFirstY, int posSecondX, int posSecondY, Color c);
 	void drawCircle(int centerX, int centerY, int x, int y, Color c);
 	void DrawFilledCircle(int x0, int y0, int radius, Color c);
 	void drawCircleBresenham(int centerX, int centerY, int radius, Color c, bool fill);
+	void drawTriangle(int x0, int y0, int x1, int y1, int x2, int y2, Color c, bool fill);
 
 	#endif
 

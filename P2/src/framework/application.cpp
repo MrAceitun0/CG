@@ -21,17 +21,29 @@ Application::Application(const char* caption, int width, int height)
 //Application Variables
 Image framebuffer(1800, 900);
 
-int figure = 0;
+int figure = 1;
 
 boolean fill = false;
 Color fillColor = Color(255, 255, 255);
 
+/*DDA*/
 int posFirstLineDDAX, posFirstLineDDAY, posSecondLineDDAX, posSecondLineDDAY;
 boolean isFirstLineDDA;
-int posFirstLineBX, posFirstLineBY, posSecondLineBX, posSecondLineBY;
+
+/*Bresenham*/
+int x_B0, y_B0, x_B1, y_B1;
 boolean isFirstLineB;
+
+/*Círculo*/
 int posFirstCircX, posFirstCircY, posSecondCircX, posSecondCircY;
 boolean isFirstCirc;
+
+/*Triángulo*/
+int x_tri0, y_tri0, x_tri1, y_tri1, x_tri2, y_tri2;
+int click_time = 0;
+Color vertex0 = Color::WHITE;
+Color vertex1 = Color::WHITE;
+Color vertex2 = Color::WHITE;
 
 //Here we have already GL working, so we can create meshes and textures
 void Application::init(void)
@@ -51,59 +63,71 @@ void Application::update(double seconds_elapsed)
 {
 	//to see all the keycodes: https://wiki.libsdl.org/SDL_Keycode
 	/*Demo*/
-	if (keystate[SDL_SCANCODE_SPACE]) //if key space is pressed
+	if (keystate[SDL_SCANCODE_SPACE]) //if key space is pressed, 
 	{
 		figure = 0;
+
+		click_time = 0;		//Para reiniciar el número de clicks del triangulo
 	}
 	/*Line DDA*/
-	if (keystate[SDL_SCANCODE_1]) //if key 1 is pressed, restart app showing a black screen
+	if (keystate[SDL_SCANCODE_1]) //if key 1 is pressed, 
 	{
 		figure = 0;
+
+		click_time = 0;		//Para reiniciar el número de clicks del triangulo
 	}
 	/*Line Bresenham*/
-	if (keystate[SDL_SCANCODE_2]) //if key 1 is pressed, restart app showing a black screen
+	if (keystate[SDL_SCANCODE_2]) //if key 2 is pressed, 
 	{
 		figure = 1;
+
+		click_time = 0;		//Para reiniciar el número de clicks del triangulo
 	}
 	/*Circle*/
-	if (keystate[SDL_SCANCODE_3]) //if key 1 is pressed, restart app showing a black screen
+	if (keystate[SDL_SCANCODE_3]) //if key 3 is pressed, 
 	{
 		figure = 2;
+
+		click_time = 0;		//Para reiniciar el número de clicks del triangulo
 	}
 	/*Triangle*/
-	if (keystate[SDL_SCANCODE_4]) //if key 1 is pressed, restart app showing a black screen
+	if (keystate[SDL_SCANCODE_4]) //if key 4 is pressed, 
 	{
 		figure = 3;
 	}
 	/*Fill*/
-	if (keystate[SDL_SCANCODE_TAB]) //if key 1 is pressed, restart app showing a black screen
+	if (keystate[SDL_SCANCODE_Q]) //if key TAB is pressed, 
 	{
-		fill = !fill;
+		fill = true;
+	}
+	if (keystate[SDL_SCANCODE_W]) //if key TAB is pressed, 
+	{
+		fill = false;
 	}
 	/*RESTART*/
-	if (keystate[SDL_SCANCODE_5]) //if key 1 is pressed, restart app showing a black screen
+	if (keystate[SDL_SCANCODE_5]) //if key 5 is pressed, restart app showing a black screen
 	{
 		framebuffer.fill(Color(0, 0, 0));
 	}
 	/*Fill with white color*/
-	if (keystate[SDL_SCANCODE_A]) //if key 1 is pressed, restart app showing a black screen
+	if (keystate[SDL_SCANCODE_A]) //if key A is pressed, 
 	{
-		fillColor = Color(255, 255, 255);
+		fillColor = Color::WHITE;
 	}
 	/*Fill with red*/
-	if (keystate[SDL_SCANCODE_S]) //if key 1 is pressed, restart app showing a black screen
+	if (keystate[SDL_SCANCODE_S]) //if key S is pressed, 
 	{
-		fillColor = Color(255, 0, 0);
+		fillColor = Color::RED;
 	}
 	/*Fill with green*/
-	if (keystate[SDL_SCANCODE_D]) //if key 1 is pressed, restart app showing a black screen
+	if (keystate[SDL_SCANCODE_D]) //if key D is pressed, 
 	{
-		fillColor = Color(0, 255, 0);
+		fillColor = Color::GREEN;
 	}
 	/*Fill with blue*/
-	if (keystate[SDL_SCANCODE_F]) //if key 1 is pressed, restart app showing a black screen
+	if (keystate[SDL_SCANCODE_F]) //if key F is pressed, 
 	{
-		fillColor = Color(0, 0, 255);
+		fillColor = Color::BLUE;
 	}
 	//to read mouse position use mouse_position
 }
@@ -132,9 +156,9 @@ void Application::onKeyUp(SDL_KeyboardEvent event)
 //mouse button event
 void Application::onMouseButtonDown( SDL_MouseButtonEvent event )
 {	
-	//Guardar dos puntos para pintar una línia entre ellos
 	if(event.button == SDL_BUTTON_LEFT) //left mouse pressed
 	{
+		/*Línea DDA*/
 		if (figure == 0)
 		{
 			if (isFirstLineDDA) {
@@ -161,34 +185,28 @@ void Application::onMouseButtonDown( SDL_MouseButtonEvent event )
 				}
 			}
 		}
-
+		/*Línea Bresenham*/
 		if (figure == 1)
 		{
-			if (isFirstLineB) {
-				posFirstLineBX = mouse_position.x;
-				posFirstLineBY = mouse_position.y;
+			if (isFirstLineB) 
+			{
+				x_B0 = mouse_position.x;
+				y_B0 = mouse_position.y;
 				isFirstLineB = false;
 			}
 			else
 			{
-				posSecondLineBX = mouse_position.x;
-				posSecondLineBY = mouse_position.y;
+				x_B1 = mouse_position.x;
+				y_B1 = mouse_position.y;
 				isFirstLineB = true;
 			}
 
 			if (!isFirstLineB)
 			{
-				if (posFirstLineBX <= posSecondLineBX)
-				{
-					framebuffer.drawLineB(posFirstLineBX, posFirstLineBY, posSecondLineBX, posSecondLineBY, fillColor);
-				}
-				else
-				{
-					framebuffer.drawLineB(posSecondLineBX, posSecondLineBY, posFirstLineBX, posFirstLineBY, fillColor);
-				}
+				framebuffer.drawLineBresenham(x_B0, y_B0, x_B1, y_B1, fillColor);
 			}
 		}
-
+		/*Círculo*/
 		if (figure == 2)
 		{
 			int centerX;
@@ -216,13 +234,34 @@ void Application::onMouseButtonDown( SDL_MouseButtonEvent event )
 				framebuffer.drawCircleBresenham(centerX, centerY, radius, fillColor, fill);
 			}
 		}
-
+		/*Triángulo*/
 		if (figure == 3)
 		{
+			if (click_time == 0)
+			{
+				x_tri0 = mouse_position.x;
+				y_tri0 = mouse_position.y;
 
+				click_time++;
+			}
+			else if (click_time == 1)
+			{
+				x_tri1 = mouse_position.x;
+				y_tri1 = mouse_position.y;
+
+				click_time++;
+			}
+			else if (click_time == 2)
+			{
+				x_tri2 = mouse_position.x;
+				y_tri2 = mouse_position.y;
+
+				click_time = 0;
+
+				framebuffer.drawTriangle(x_tri0, y_tri0, x_tri1, y_tri1, x_tri2, y_tri2, fillColor, fill);
+			}
 		}	
 	}
-
 }
 
 

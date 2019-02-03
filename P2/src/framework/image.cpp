@@ -265,9 +265,228 @@ void Image::drawLineDDA(int posFirstX, int posFirstY, int posSecondX, int posSec
 	}
 }
 
-void Image::drawLineB(int posFirstX, int posFirstY, int posSecondX, int posSecondY, Color c)
+void Image::drawLineBresenham(int x0, int y0, int x1, int y1, Color c)
 {
+	int x, y, dx, dy, d, inc_E, inc_NE;
 
+	/*int xi = x0;
+	int xj = x1;
+	int yi = y0;
+	int yj = y1;
+
+	if (x0 > x1)
+	{
+		x0 = xj;
+		x1 = xi;
+	}
+	if (y0 > y1)
+	{
+		y0 = yj;
+		y1 = yi;
+	}*/
+
+	dx = abs(x1 - x0);
+	dy = abs(y1 - y0);
+
+	x = x0;
+	y = y0;
+
+	setPixelSafe(x, y, c);
+
+	if (dx > dy)
+	{
+		if (y0 < y1)
+		{
+			if (x0 < x1)	//5
+			{
+				d = 2 * dy - dx;
+				inc_E = 2 * dy;
+				inc_NE = 2 * (dy - dx);
+
+				while (x < x1)
+				{
+					if (d <= 0)
+					{
+						d += inc_E;
+					}
+					else
+					{
+						d += inc_NE;
+						y++;
+					}
+
+					x++;
+					setPixelSafe(x, y, c);
+				}
+			}
+			if(x0 > x1)		//8
+			{
+				d = 2 * dy - dx;
+				inc_E = 2 * dy;
+				inc_NE = 2 * (dy - dx);
+
+				while (x > x1)
+				{
+					if (d <= 0)
+					{
+						d += inc_E;
+					}
+					else
+					{
+						d += inc_NE;
+						y++;
+					}
+
+					x--;
+					setPixelSafe(x, y, c);
+				}
+			}
+		}
+		else
+		{
+			if (x0 < x1)	//4
+			{
+				d = 2 * dy - dx;
+				inc_E = 2 * dy;
+				inc_NE = 2 * (dy - dx);
+
+				while (x < x1)
+				{
+					if (d <= 0)
+					{
+						d += inc_E;
+					}
+					else
+					{
+						d += inc_NE;
+						y--;
+					}
+
+					x++;
+					setPixelSafe(x, y, c);
+				}
+			}
+			if (x0 > x1)	//1
+			{
+				d = 2 * dy - dx;
+				inc_E = 2 * dy;
+				inc_NE = 2 * (dy - dx);
+
+				while (x > x1)
+				{
+					if (d <= 0)
+					{
+						d += inc_E;
+					}
+					else
+					{
+						d += inc_NE;
+						y--;
+					}
+
+					x--;
+					setPixelSafe(x, y, c);
+				}
+			}
+		}
+	}
+	else	//dx < dy
+	{
+		if (x0 < x1)
+		{
+			if (y0 < y1)	//6
+			{
+				d = 2 * dx - dy;
+				inc_E = 2 * dx;
+				inc_NE = 2 * (dx - dy);
+
+				while (y < y1)
+				{
+					if (d < 0)
+					{
+						d += inc_E;
+					}
+					else
+					{
+						d += inc_NE;
+						x++;
+					}
+
+					y++;
+					setPixelSafe(x, y, c);
+				}
+			}
+			if (y0 > y1)	//3
+			{
+				d = 2 * dx - dy;
+				inc_E = 2 * dx;
+				inc_NE = 2 * (dx - dy);
+
+				while (y > y1)
+				{
+					if (d < 0)
+					{
+						d += inc_E;
+					}
+					else
+					{
+						d += inc_NE;
+						x++;
+					}
+
+					y--;
+					setPixelSafe(x, y, c);
+				}
+			}
+		}
+		else
+		{
+			if (y0 < y1)	//7
+			{
+				d = 2 * dx - dy;
+				inc_E = 2 * dx;
+				inc_NE = 2 * (dx - dy);
+
+				while (y < y1)
+				{
+					if (d < 0)
+					{
+						d += inc_E;
+					}
+					else
+					{
+						d += inc_NE;
+						x--;
+					}
+
+					y++;
+					setPixelSafe(x, y, c);
+				}
+			}
+			if (y0 > y1)	//2
+			{
+				d = 2 * dx - dy;
+				inc_E = 2 * dx;
+				inc_NE = 2 * (dx - dy);
+
+				while (y > y1)
+				{
+					if (d < 0)
+					{
+						d += inc_E;
+					}
+					else
+					{
+						d += inc_NE;
+						x--;
+					}
+
+					y--;
+					setPixelSafe(x, y, c);
+				}
+			}
+		}
+	}	
 }
 
 void Image::drawCircle(int centerX, int centerY, int x, int y, Color c)
@@ -348,6 +567,21 @@ void Image::drawCircleBresenham(int centerX, int centerY, int radius, Color c, b
 		DrawFilledCircle(centerX, centerY, radius, c);
 	}
 }
+
+void Image::drawTriangle(int x0, int y0, int x1, int y1, int x2, int y2, Color c, bool fill)
+{
+	if (fill)
+	{
+
+	}
+	else
+	{
+		drawLineDDA(x0, y0, x1, y1, c);
+		drawLineDDA(x1, y1, x2, y2, c);
+		drawLineDDA(x2, y2, x0, y0, c);
+	}
+}
+
 
 #ifndef IGNORE_LAMBDAS
 
