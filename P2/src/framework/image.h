@@ -86,9 +86,15 @@ public:
 		return *this;
 	}
 
+	struct sCelda {
+		int minx;
+		int maxx;
+	};
+
 	float abs(float n);
 
 	void drawLineDDA(int posFirstX, int posFirstY, int posSecondX, int posSecondY, Color c);
+	void Image::drawLineDDAwithTable(int posFirstX, int posFirstY, int posSecondX, int posSecondY, Color c, std::vector<sCelda> &table);
 	void drawLineBresenham(int posFirstX, int posFirstY, int posSecondX, int posSecondY, Color c);
 	void drawCircle(int centerX, int centerY, int x, int y, Color c);
 	void DrawFilledCircle(int x0, int y0, int radius, Color c);

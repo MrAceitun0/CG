@@ -19,7 +19,7 @@ Application::Application(const char* caption, int width, int height)
 }
 
 //Application Variables
-Image framebuffer(1800, 900);
+Image framebuffer(800, 800);
 
 int figure = 1;
 
@@ -95,15 +95,6 @@ void Application::update(double seconds_elapsed)
 	{
 		figure = 3;
 	}
-	/*Fill*/
-	if (keystate[SDL_SCANCODE_Q]) //if key TAB is pressed, 
-	{
-		fill = true;
-	}
-	if (keystate[SDL_SCANCODE_W]) //if key TAB is pressed, 
-	{
-		fill = false;
-	}
 	/*RESTART*/
 	if (keystate[SDL_SCANCODE_5]) //if key 5 is pressed, restart app showing a black screen
 	{
@@ -144,6 +135,11 @@ void Application::onKeyDown( SDL_KeyboardEvent event )
 
 		case SDL_SCANCODE_SPACE:
 			break; //Demo Geometric Figures
+		
+		/*fill*/
+		case SDL_SCANCODE_TAB:
+			fill = !fill;
+			break;
 	}
 }
 

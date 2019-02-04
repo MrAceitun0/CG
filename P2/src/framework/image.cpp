@@ -265,6 +265,45 @@ void Image::drawLineDDA(int posFirstX, int posFirstY, int posSecondX, int posSec
 	}
 }
 
+struct sCelda {
+	int minx;
+	int maxx;
+};
+
+void Image::drawLineDDAwithTable(int posFirstX, int posFirstY, int posSecondX, int posSecondY, Color c, std::vector<sCelda> &table)
+{
+	float dy = posSecondY - posFirstY;
+	float dx = posSecondX - posFirstX;
+
+	//Computar distancia de pintado necesaria entre puntos
+	float steps = abs(dx) > abs(dy) ? abs(dx) : abs(dy);
+
+	//Computar incremento en X,Y por cada step
+	float incX = dx / steps;
+	float incY = dy / steps;
+
+	float x = posFirstX;
+	float y = posFirstY;
+
+	for (int i = 0; i <= steps; i++)
+	{
+		setPixelSafe(x, y, c);
+
+		if (x < table[y].minx)
+		{
+			table[y].minx = x;
+		}
+		
+		if (x > table[y].maxx)
+		{
+			table[y].maxx = x;
+		}
+
+		x += incX;
+		y += incY;
+	}
+}
+
 void Image::drawLineBresenham(int x0, int y0, int x1, int y1, Color c)
 {
 	int x, y, dx, dy, d, inc_E, inc_NE;
@@ -568,17 +607,40 @@ void Image::drawCircleBresenham(int centerX, int centerY, int radius, Color c, b
 	}
 }
 
-void Image::drawTriangle(int x0, int y0, int x1, int y1, int x2, int y2, Color c, bool fill)
+void Image::drawTriangle(int x0, int y0, int x1, int y1, int x2, int y2, Color color, bool fill)
 {
 	if (fill)
 	{
+		std::vector<sCelda> table;
+		table.resize(this->height);
+
+		//inicializar tabla
+		for (int i = 0; i < table.size(); i++)
+		{
+			table[i].minx = 100000; //very big number
+			table[i].maxx = -100000; //very small number
+		}
+
+		//Raster lines algorithm
+		drawLineDDAwithTable(x0, y0, x1, y1, color, table);
+		drawLineDDAwithTable(x1, y1, x2, y2, color, table);
+		drawLineDDAwithTable(x2, y2, x0, y0, color, table);
+
+		//Filling triangle algorithm
+		for (int i = 0; i < table.size(); i++)
+		{
+			if (table[i].minx < table[i].maxx)
+			{
+				drawLineDDA(table[i].minx, i, table[i].maxx, i, color);
+			}
+		}
 
 	}
 	else
-	{
-		drawLineDDA(x0, y0, x1, y1, c);
-		drawLineDDA(x1, y1, x2, y2, c);
-		drawLineDDA(x2, y2, x0, y0, c);
+	{ 
+		drawLineDDA(x0, y0, x1, y1, color);
+		drawLineDDA(x1, y1, x2, y2, color);
+		drawLineDDA(x2, y2, x0, y0, color);
 	}
 }
 
