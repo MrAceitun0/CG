@@ -100,7 +100,10 @@ public:
 	void DrawFilledCircle(int x0, int y0, int radius, Color c);
 	void drawCircleBresenham(int centerX, int centerY, int radius, Color c, bool fill);
 	void drawTriangle(int x0, int y0, int x1, int y1, int x2, int y2, Color c, bool fill);
-
+	void drawTriangleThreeColors(int x0, int y0, int x1, int y1, int x2, int y2, Color c1, Color c2, Color c3, bool fill);
+	void drawTriangleBarycenter(int x0, int y0, int x1, int y1, int x2, int y2, Color c1, Color c2, Color c3);
+	float maxx(float x, float y);
+	float minn(float x, float y);
 	#endif
 
 

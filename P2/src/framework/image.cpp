@@ -644,6 +644,159 @@ void Image::drawTriangle(int x0, int y0, int x1, int y1, int x2, int y2, Color c
 	}
 }
 
+float Image::maxx(float x, float y)
+{
+	if (x < y)
+	{
+		return y;
+	}
+	else
+	{
+		return x;
+	}
+}
+
+float Image::minn(float x, float y)
+{
+	if (x < y)
+	{
+		return x;
+	}
+	else
+	{
+		return y;
+	}
+}
+
+void Image::drawTriangleBarycenter(int x0, int y0, int x1, int y1, int x2, int y2, Color c1, Color c2, Color c3)
+{
+	float px;
+	float py;
+
+	/*Find min and max points*/
+	int xmin = minn(x0, x1);
+	int xmax = maxx(x0, x1);
+	int ymin = minn(y0, y1);
+	int ymax = maxx(y0, y1);
+
+	int minX = minn(xmin, x2);
+	int maxX = maxx(xmax, x2);
+	int minY = minn(ymin, y2);
+	int maxY = maxx(ymax, y2);
+
+	for (int i = minX; i < maxX; i++)
+	{
+		for (int j = minY; j < maxY; j++)
+		{
+			px = i + 0.5;
+			py = j + 0.5;
+
+			float denAlpha = ((y1 - y2) * x0 + (x2 - x1) * y0 + (x1 * y2) - (x2 * y1));
+			float denBeta = ((y2 - y0) * x1 + (x0 - x2) * y1 + (x2 * y0) - (x0 * y2));
+			float numAlpha = ((y1 - y2) * px + (x2 - x1) * py + (x1 * y2) - (x2 * y1));
+			float numBeta = ((y2 - y0) * px + (x0 - x2) * py + (x2 * y0) - (x0 * y2));
+			float alpha = numAlpha / denAlpha;
+			float beta = numBeta / denBeta;
+			float gamma = 1 - alpha - beta;
+
+			if (alpha >= 0 && beta >= 0 && gamma >= 0)
+			{
+				int myRed = (c1.r * alpha) + (c1.g * beta) + (c1.b * gamma);
+				int myGreen = (c2.r * alpha) + (c2.g * beta) + (c2.b * gamma);
+				int myBlue = (c3.r * alpha) + (c3.g * beta) + (c3.b * gamma);
+
+				Color c = Color(myRed, myGreen, myBlue);
+
+				setPixelSafe(px, py, c);
+			}
+		}
+	}
+}
+
+void Image::drawTriangleThreeColors(int x0, int y0, int x1, int y1, int x2, int y2, Color c1, Color c2, Color c3, bool fill)
+{
+	if (fill)
+	{
+		int centerX = (x0 + x1 + x2) / 3;
+		int centerY = (y0 + y1 + y2) / 3;
+
+		std::vector<sCelda> table;
+		table.resize(this->height);
+
+		/*1r sub-triángulo*/
+		//inicializar tabla
+		for (int i = 0; i < table.size(); i++)
+		{
+			table[i].minx = 100000; //very big number
+			table[i].maxx = -100000; //very small number
+		}
+
+		//Raster lines algorithm
+		drawLineDDAwithTable(x0, y0, x1, y1, c1, table);
+		drawLineDDAwithTable(x1, y1, centerX, centerY, c1, table);
+		drawLineDDAwithTable(centerX, centerY, x0, y0, c1, table);
+
+		//Filling triangle algorithm
+		for (int i = 0; i < table.size(); i++)
+		{
+			if (table[i].minx < table[i].maxx)
+			{
+				drawLineDDA(table[i].minx, i, table[i].maxx, i, c1);
+			}
+		}
+
+		/*2o sub-triángulo*/
+		//inicializar tabla
+		for (int i = 0; i < table.size(); i++)
+		{
+			table[i].minx = 100000; //very big number
+			table[i].maxx = -100000; //very small number
+		}
+
+		//Raster lines algorithm
+		drawLineDDAwithTable(x1, y1, x2, y2, c2, table);
+		drawLineDDAwithTable(x2, y2, centerX, centerY, c2, table);
+		drawLineDDAwithTable(centerX, centerY, x1, y1, c2, table);
+
+		//Filling triangle algorithm
+		for (int i = 0; i < table.size(); i++)
+		{
+			if (table[i].minx < table[i].maxx)
+			{
+				drawLineDDA(table[i].minx, i, table[i].maxx, i, c2);
+			}
+		}
+
+		/*3r sub-triángulo*/
+		//inicializar tabla
+		for (int i = 0; i < table.size(); i++)
+		{
+			table[i].minx = 100000; //very big number
+			table[i].maxx = -100000; //very small number
+		}
+
+		//Raster lines algorithm
+		drawLineDDAwithTable(x2, y2, x0, y0, c3, table);
+		drawLineDDAwithTable(x0, y0, centerX, centerY, c3, table);
+		drawLineDDAwithTable(centerX, centerY, x2, y2, c3, table);
+
+		//Filling triangle algorithm
+		for (int i = 0; i < table.size(); i++)
+		{
+			if (table[i].minx < table[i].maxx)
+			{
+				drawLineDDA(table[i].minx, i, table[i].maxx, i, c3);
+			}
+		}
+	}
+	else
+	{
+		drawLineDDA(x0, y0, x1, y1, c1);
+		drawLineDDA(x1, y1, x2, y2, c2);
+		drawLineDDA(x2, y2, x0, y0, c3);
+	}
+}
+
 
 #ifndef IGNORE_LAMBDAS
 

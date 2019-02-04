@@ -21,7 +21,7 @@ Application::Application(const char* caption, int width, int height)
 //Application Variables
 Image framebuffer(800, 800);
 
-int figure = 1;
+int figure = 4;
 
 boolean fill = false;
 Color fillColor = Color(255, 255, 255);
@@ -41,9 +41,17 @@ boolean isFirstCirc;
 /*Triángulo*/
 int x_tri0, y_tri0, x_tri1, y_tri1, x_tri2, y_tri2;
 int click_time = 0;
-Color vertex0 = Color::WHITE;
-Color vertex1 = Color::WHITE;
-Color vertex2 = Color::WHITE;
+Color lineC1;
+Color lineC2;
+Color lineC3;
+
+Color col1 = Color(255, 0, 0);
+Color col2 = Color(0, 255, 0);
+Color col3 = Color(0, 0, 255);
+
+Color vertex1;
+Color vertex2;
+Color vertex3;
 
 //Here we have already GL working, so we can create meshes and textures
 void Application::init(void)
@@ -94,9 +102,22 @@ void Application::update(double seconds_elapsed)
 	if (keystate[SDL_SCANCODE_4]) //if key 4 is pressed, 
 	{
 		figure = 3;
+		click_time = 0;
+	}
+	/*Triangle Barycenter*/
+	if (keystate[SDL_SCANCODE_5])
+	{
+		figure = 4;
+		click_time = 0;
+	}
+	/*3 colors triangle*/
+	if (keystate[SDL_SCANCODE_6])
+	{
+		figure = 5;
+		click_time = 0;
 	}
 	/*RESTART*/
-	if (keystate[SDL_SCANCODE_5]) //if key 5 is pressed, restart app showing a black screen
+	if (keystate[SDL_SCANCODE_7]) //if key 5 is pressed, restart app showing a black screen
 	{
 		framebuffer.fill(Color(0, 0, 0));
 	}
@@ -104,22 +125,46 @@ void Application::update(double seconds_elapsed)
 	if (keystate[SDL_SCANCODE_A]) //if key A is pressed, 
 	{
 		fillColor = Color::WHITE;
+
+		col1 = Color(255, 255, 255);
+		col2 = Color(255, 255, 255);
+		col3 = Color(255, 255, 255);
 	}
 	/*Fill with red*/
 	if (keystate[SDL_SCANCODE_S]) //if key S is pressed, 
 	{
 		fillColor = Color::RED;
+
+		col1 = Color(255, 0, 0);
+		col2 = Color(255, 0, 0);
+		col3 = Color(255, 0, 0);
 	}
 	/*Fill with green*/
 	if (keystate[SDL_SCANCODE_D]) //if key D is pressed, 
 	{
 		fillColor = Color::GREEN;
+
+		col1 = Color(0, 255, 0);
+		col2 = Color(0, 255, 0);
+		col3 = Color(0, 255, 0);
 	}
 	/*Fill with blue*/
 	if (keystate[SDL_SCANCODE_F]) //if key F is pressed, 
 	{
 		fillColor = Color::BLUE;
+
+		col1 = Color(0, 0, 255);
+		col2 = Color(0, 0, 255);
+		col3 = Color(0, 0, 255);
 	}
+	/*Fill with black*/
+	if (keystate[SDL_SCANCODE_G]) //if key F is pressed, 
+	{
+		col1 = Color(0, 0, 0);
+		col2 = Color(0, 0, 0);
+		col3 = Color(0, 0, 0);
+	}
+
 	//to read mouse position use mouse_position
 }
 
@@ -256,7 +301,73 @@ void Application::onMouseButtonDown( SDL_MouseButtonEvent event )
 
 				framebuffer.drawTriangle(x_tri0, y_tri0, x_tri1, y_tri1, x_tri2, y_tri2, fillColor, fill);
 			}
-		}	
+		}
+		/*Triángulo con distintos colores (Baricentro)*/
+		if (figure == 4)
+		{
+			if (click_time == 0)
+			{
+				x_tri0 = mouse_position.x;
+				y_tri0 = mouse_position.y;
+
+				vertex1 = col1;
+
+				click_time++;
+			}
+			else if (click_time == 1)
+			{
+				x_tri1 = mouse_position.x;
+				y_tri1 = mouse_position.y;
+
+				vertex2 = col2;
+
+				click_time++;
+			}
+			else if (click_time == 2)
+			{
+				x_tri2 = mouse_position.x;
+				y_tri2 = mouse_position.y;
+
+				vertex3 = col3;
+
+				click_time = 0;
+
+				framebuffer.drawTriangleBarycenter(x_tri0, y_tri0, x_tri1, y_tri1, x_tri2, y_tri2, vertex1, vertex2, vertex3);
+			}
+		}
+		/*Triángulo de 3 colores*/
+		if (figure == 5)
+		{
+			if (click_time == 0)
+			{
+				x_tri0 = mouse_position.x;
+				y_tri0 = mouse_position.y;
+
+				lineC1 = fillColor;
+
+				click_time++;
+			}
+			else if (click_time == 1)
+			{
+				x_tri1 = mouse_position.x;
+				y_tri1 = mouse_position.y;
+
+				lineC2 = fillColor;
+
+				click_time++;
+			}
+			else if (click_time == 2)
+			{
+				x_tri2 = mouse_position.x;
+				y_tri2 = mouse_position.y;
+
+				lineC3 = fillColor;
+
+				click_time = 0;
+
+				framebuffer.drawTriangleThreeColors(x_tri0, y_tri0, x_tri1, y_tri1, x_tri2, y_tri2, lineC1, lineC2, lineC3, fill);
+			}
+		}
 	}
 }
 

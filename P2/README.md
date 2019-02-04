@@ -8,19 +8,16 @@ Click izquierdo: marcar puntos
 2: Línea Bresenham
 3: Círculo
 4: Triángulo
-5: Reiniciar Framework
+5: Triángulo con distintos colores (Baricentro)
+6: Triángulo de 3 colores
+7: Reiniciar Framework
 
-Q: RELLENAR
-W: No Rellenar
+TAB: Fill
 
-A: BLANCO
-S: ROJO
-C: VERDE
-D: AZUL
+A: Blanco ¡¡¡¡¡HALA MADRID!!!!!
+S: Rojo
+D: Verde
+F: Azul
+G: Negro
 
-SPACE: DEMO
-
-
-
-
-/*---------A POSAR BE---------*/
+SPACE: DEMO -> No hi ha res
