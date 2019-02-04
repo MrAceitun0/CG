@@ -21,7 +21,7 @@ Application::Application(const char* caption, int width, int height)
 //Application Variables
 Image framebuffer(800, 800);
 
-int figure = 4;
+int figure = 0;
 
 boolean fill = false;
 Color fillColor = Color(255, 255, 255);
@@ -109,6 +109,10 @@ void Application::update(double seconds_elapsed)
 	{
 		figure = 4;
 		click_time = 0;
+
+		col1 = Color(255, 0, 0);
+		col2 = Color(0, 255, 0);
+		col3 = Color(0, 0, 255);
 	}
 	/*3 colors triangle*/
 	if (keystate[SDL_SCANCODE_6])
