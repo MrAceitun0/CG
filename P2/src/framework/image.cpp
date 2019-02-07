@@ -528,7 +528,7 @@ void Image::drawLineBresenham(int x0, int y0, int x1, int y1, Color c)
 	}	
 }
 
-void Image::drawCircle(int centerX, int centerY, int x, int y, Color c)
+void Image::drawCircle(int centerX, int centerY, int x, int y, Color c, bool fill)
 {
 	setPixelSafe(x + centerX, y + centerY, c);
 	setPixelSafe(-x + centerX, y + centerY, c);
@@ -539,38 +539,13 @@ void Image::drawCircle(int centerX, int centerY, int x, int y, Color c)
 	setPixelSafe(-y + centerX, x + centerY, c);
 	setPixelSafe(y + centerX, -x + centerY, c);
 	setPixelSafe(-y + centerX, -x + centerY, c);
-}
 
-void Image::DrawFilledCircle(int x0, int y0, int radius, Color c)
-{
-	int x = radius;
-	int y = 0;
-	int xChange = 1 - (radius << 1);
-	int yChange = 0;
-	int radiusError = 0;
-
-	while (x >= y)
+	if (fill)
 	{
-		for (int i = x0 - x; i <= x0 + x; i++)
-		{
-			setPixelSafe(i, y0 + y, c);
-			setPixelSafe(i, y0 - y, c);
-		}
-		for (int i = x0 - y; i <= x0 + y; i++)
-		{
-			setPixelSafe(i, y0 + x, c);
-			setPixelSafe(i, y0 - x, c);
-		}
-
-		y++;
-		radiusError += yChange;
-		yChange += 2;
-		if (((radiusError << 1) + xChange) > 0)
-		{
-			x--;
-			radiusError += xChange;
-			xChange += 2;
-		}
+		drawLineDDA(centerX - x, centerY + y, centerX + x, centerY + y, c);
+		drawLineDDA(centerX - x, centerY - y, centerX + x, centerY - y, c);
+		drawLineDDA(centerX - y, centerY + x, centerX + y, centerY + x, c);
+		drawLineDDA(centerX - y, centerY - x, centerX + y, centerY - x, c);
 	}
 }
 
@@ -579,7 +554,7 @@ void Image::drawCircleBresenham(int centerX, int centerY, int radius, Color c, b
 	int x = 0;
 	int y = radius;
 	int d = 3 - 2 * radius;
-	drawCircle(centerX, centerY, x, y, c);
+	drawCircle(centerX, centerY, x, y, c, fill);
 
 	while (y >= x)
 	{
@@ -598,12 +573,7 @@ void Image::drawCircleBresenham(int centerX, int centerY, int radius, Color c, b
 		}
 		else
 			d = d + 4 * x + 6;
-		drawCircle(centerX, centerY, x, y, c);
-	}
-
-	if (fill)
-	{
-		DrawFilledCircle(centerX, centerY, radius, c);
+		drawCircle(centerX, centerY, x, y, c, fill);
 	}
 }
 

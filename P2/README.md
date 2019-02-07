@@ -12,12 +12,10 @@ Click izquierdo: marcar puntos
 6: Triángulo de 3 colores
 7: Reiniciar Framework
 
-TAB: Fill
+TAB: Fill/No Fill
 
-A: Blanco ¡¡¡¡¡HALA MADRID!!!!!
+A: Blanco
 S: Rojo
 D: Verde
 F: Azul
 G: Negro
-
-SPACE: DEMO -> No hi ha res

@@ -96,8 +96,7 @@ public:
 	void drawLineDDA(int posFirstX, int posFirstY, int posSecondX, int posSecondY, Color c);
 	void Image::drawLineDDAwithTable(int posFirstX, int posFirstY, int posSecondX, int posSecondY, Color c, std::vector<sCelda> &table);
 	void drawLineBresenham(int posFirstX, int posFirstY, int posSecondX, int posSecondY, Color c);
-	void drawCircle(int centerX, int centerY, int x, int y, Color c);
-	void DrawFilledCircle(int x0, int y0, int radius, Color c);
+	void drawCircle(int centerX, int centerY, int x, int y, Color c, bool fill);
 	void drawCircleBresenham(int centerX, int centerY, int radius, Color c, bool fill);
 	void drawTriangle(int x0, int y0, int x1, int y1, int x2, int y2, Color c, bool fill);
 	void drawTriangleThreeColors(int x0, int y0, int x1, int y1, int x2, int y2, Color c1, Color c2, Color c3, bool fill);

@@ -164,6 +164,8 @@ void Application::update(double seconds_elapsed)
 	/*Fill with black*/
 	if (keystate[SDL_SCANCODE_G]) //if key F is pressed, 
 	{
+		fillColor = Color::BLACK;
+
 		col1 = Color(0, 0, 0);
 		col2 = Color(0, 0, 0);
 		col3 = Color(0, 0, 0);
