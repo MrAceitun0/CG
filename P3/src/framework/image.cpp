@@ -323,28 +323,28 @@ float Image::minn(float x, float y)
 	}
 }
 
-void Image::drawTriangleBarycenter(int x0, int y0, int x1, int y1, int x2, int y2, Color c1, Color c2, Color c3)
+void Image::drawTriangleBarycenter(float x0, float y0, float x1, float y1, float x2, float y2, Color c1, Color c2, Color c3)
 {
 	float px;
 	float py;
 
 	/*Find min and max points*/
-	int xmin = minn(x0, x1);
-	int xmax = maxx(x0, x1);
-	int ymin = minn(y0, y1);
-	int ymax = maxx(y0, y1);
+	float xmin = minn(x0, x1);
+	float xmax = maxx(x0, x1);
+	float ymin = minn(y0, y1);
+	float ymax = maxx(y0, y1);
 
-	int minX = minn(xmin, x2);
-	int maxX = maxx(xmax, x2);
-	int minY = minn(ymin, y2);
-	int maxY = maxx(ymax, y2);
+	float minX = minn(xmin, x2);
+	float maxX = maxx(xmax, x2);
+	float minY = minn(ymin, y2);
+	float maxY = maxx(ymax, y2);
 
-	for (int i = minX; i < maxX; i++)
+	for (float i = minX; i < maxX; i++)
 	{
-		for (int j = minY; j < maxY; j++)
+		for (float j = minY; j < maxY; j++)
 		{
-			px = i + 0.5;
-			py = j + 0.5;
+			px = i + 0.5f;
+			py = j + 0.5f;
 
 			float denAlpha = ((y1 - y2) * x0 + (x2 - x1) * y0 + (x1 * y2) - (x2 * y1));
 			float denBeta = ((y2 - y0) * x1 + (x0 - x2) * y1 + (x2 * y0) - (x0 * y2));

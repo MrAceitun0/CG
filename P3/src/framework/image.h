@@ -12,6 +12,8 @@
 #include <iostream>
 #include "framework.h"
 
+using namespace std;
+
 //remove unsafe warnings
 #define _CRT_SECURE_NO_WARNINGS
 #pragma warning(disable:4996)
@@ -93,7 +95,7 @@ public:
 	float maxx(float x, float y);
 	float minn(float x, float y);
 
-	void drawTriangleBarycenter(int x0, int y0, int x1, int y1, int x2, int y2, Color c1, Color c2, Color c3);
+	void drawTriangleBarycenter(float x0, float y0, float x1, float y1, float x2, float y2, Color c1, Color c2, Color c3);
 
 	#endif
 

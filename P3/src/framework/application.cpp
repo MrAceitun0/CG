@@ -3,6 +3,7 @@
 #include "image.h"
 #include "mesh.h"
 #include "time.h"
+#include <math.h>
 
 using namespace std;
 
@@ -48,6 +49,9 @@ void Application::render(void)
 	//render framebuffer
 	Image framebuffer( window_width, window_height );
 
+	float xRatio = fabs(1 - (-1)) / fabs(this->window_width - 0);
+	float yRatio = fabs(1 - (-1)) / fabs(this->window_height - 0);
+
 	framebuffer.fill(Color(40, 45, 60 )); //pale blue
 
 	//for every point of the mesh (to draw triangles take three points each time and connect the points between them (1,2,3,   4,5,6,   ... )
@@ -58,19 +62,43 @@ void Application::render(void)
 		//project every point in the mesh to normalized coordinates using the viewprojection_matrix inside camera
 		Vector3 normalized_point = camera->projectVector( vertex );
 
-		//convert from normalized (-1 to +1) to framebuffer coordinates (0,W)
-		float finalX = normalized_point.x / this->window_width;
-		float finalY = normalized_point.y / this->window_height;
+		if (normalized_point.x >= -1 && normalized_point.x <= 1 && normalized_point.y >= -1 && normalized_point.y <= 1)
+		{
+			//convert from normalized (-1 to +1) to framebuffer coordinates (0,W)
+			float finalX = normalized_point.x * xRatio;
+			float finalY = normalized_point.y * yRatio;
 
-		//paint point in framebuffer
-		Vector2 finalV;
-		finalV.x = finalX;
-		finalV.y = finalY;
-		points.push_back(finalV);
+			//paint point in framebuffer
+			Vector2 finalV;
+			finalV.x = finalX;
+			finalV.y = finalY;
+			points.push_back(finalV);
+		}
 	}
 
-	for (std::vector<Vector2>::size_type i = 0; i != points.size(); i = i+3) {
-		framebuffer.drawTriangleBarycenter(points[i].x, points[i].y, points[i+1].x, points[i+1].y, points[i+2].y, points[i+2].y, Color::RED, Color::GREEN, Color::BLUE);
+	Vector2 tri0;
+	Vector2 tri1;
+	Vector2 tri2;
+
+	for (std::vector<Vector2>::size_type i = 0; i < points.size(); ++i) 
+	{
+		if (i % 3 == 0)
+		{
+			tri0.x = points[i].x;
+			tri0.y = points[i].y;
+		}
+		else if (i % 3 == 1)
+		{
+			tri1.x = points[i].x;
+			tri1.y = points[i].y;
+		}
+		else if (i % 3 == 2)
+		{
+			tri2.x = points[i].x;
+			tri2.y = points[i].y;
+			framebuffer.drawTriangleBarycenter(tri0.x, tri0.y, tri1.x, tri1.y, tri2.x, tri2.y, Color::RED, Color::GREEN, Color::BLUE);
+		}
+		//framebuffer.drawTriangleBarycenter(points[i].x, points[i].y, points[i+1].x, points[i+1].y, points[i+2].y, points[i+2].y, Color::RED, Color::GREEN, Color::BLUE);
 	}
 
 
