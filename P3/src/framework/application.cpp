@@ -39,18 +39,18 @@ void Application::init(void)
 
 	//load a mesh
 	mesh = new Mesh();
-	if( !mesh->loadOBJ("lee.obj") )
+	if( !mesh->loadOBJ("woman.obj") )
 		std::cout << "FILE Lee.obj NOT FOUND" << std::endl;
 }  
+
+//render framebuffer
+Image framebuffer(800, 800);
 
 //render one frame
 void Application::render(void)
 {
-	//render framebuffer
-	Image framebuffer( window_width, window_height );
-
-	float xRatio = fabs(1 - (-1)) / fabs(this->window_width - 0);
-	float yRatio = fabs(1 - (-1)) / fabs(this->window_height - 0);
+	//float xRatio = fabs(1 - (-1)) / fabs(this->window_width - 0);
+	//float yRatio = fabs(1 - (-1)) / fabs(this->window_height - 0);
 
 	framebuffer.fill(Color(40, 45, 60 )); //pale blue
 
@@ -64,9 +64,32 @@ void Application::render(void)
 
 		if (normalized_point.x >= -1 && normalized_point.x <= 1 && normalized_point.y >= -1 && normalized_point.y <= 1)
 		{
-			//convert from normalized (-1 to +1) to framebuffer coordinates (0,W)
-			float finalX = normalized_point.x * xRatio;
-			float finalY = normalized_point.y * yRatio;
+			float finalX;
+			float finalY;
+
+			if (normalized_point.x > 0)
+			{
+				finalX = (normalized_point.x * (this->window_width / 2)) + (this->window_width / 2);
+			}
+			else if (normalized_point.x < 0)
+			{
+				finalX = (normalized_point.x * (this->window_width / 2)) + (this->window_width / 2);
+			}
+			else {
+				finalX = this->window_width / 2;
+			}
+
+			if (normalized_point.y > 0)
+			{
+				finalY = (normalized_point.y * (this->window_height / 2)) + (this->window_height / 2);
+			}
+			else if (normalized_point.y < 0)
+			{
+				finalY = (normalized_point.y * (this->window_height / 2)) + (this->window_height / 2);
+			}
+			else {
+				finalY = this->window_height / 2;
+			}
 
 			//paint point in framebuffer
 			Vector2 finalV;
@@ -98,10 +121,9 @@ void Application::render(void)
 			tri2.y = points[i].y;
 			framebuffer.drawTriangleBarycenter(tri0.x, tri0.y, tri1.x, tri1.y, tri2.x, tri2.y, Color::RED, Color::GREEN, Color::BLUE);
 		}
-		//framebuffer.drawTriangleBarycenter(points[i].x, points[i].y, points[i+1].x, points[i+1].y, points[i+2].y, points[i+2].y, Color::RED, Color::GREEN, Color::BLUE);
 	}
-
-
+	
+	points.clear();
 	//render to screen
 	showImage( &framebuffer );
 
