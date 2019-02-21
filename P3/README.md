@@ -7,6 +7,8 @@ Los documentos siguientes contienen:
 
 Esta práctica consiste en la implementación de la proyección de 3D a 2D usando matrices y proyectar los vértices 3D a 2D para poder pintarlos.
 
+Tanto la posición de la camara, la posición donde apunta la camara y el fov de la camara pueden ser controlados por las teclas explicadas más abajo. Los triangulos se rellenan de tres colores distintos.
+
 ##Controles:
 * Al pulsar la tecla "A" el centro de la camara se mueve hacia la izquierda.
 * Al pulsar la tecla "D" el centro de la camara se mueve hacia la derecha.
