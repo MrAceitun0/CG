@@ -10,6 +10,36 @@ using namespace std;
 Mesh* mesh = NULL;
 Camera* camera = NULL;
 
+// normalize the depth in the range [near, far]
+float normalizeDepth(float d)
+{
+	float   rmin = 0, // minimum of the range of depths -- empirically determined
+		rmax = 2147483648, // maximum of the range of depths -- empirically determined
+		tmin = camera->near_plane, // minimum of the range of target scale (near)
+		tmax = camera->far_plane; // maximum of the range of target scale (far)
+
+	return ((d - rmin) / (rmax - rmin)) * (tmax - tmin) + tmin; // just math!
+}
+
+// barycentric interpolation of triangles
+// this is useful to get the depth of every pixel inside the triangle
+float getDepth(Vector3 p1, Vector3 p2, Vector3 p3, unsigned int x, unsigned int y)
+{
+	float w1 = ((p2.y - p3.y) * (x - p3.x) + (p3.x - p2.x) * (y - p3.y)) /
+		((p2.y - p3.y) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.y - p3.y));
+
+	if (w1 < 0) return INT_MAX;
+
+	float w2 = ((p3.y - p1.y) * (x - p3.x) + (p1.x - p3.x) * (y - p3.y)) /
+		((p2.y - p3.y) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.y - p3.y));
+
+	if (w1 < 0) return INT_MAX;
+
+	float w3 = 1 - w1 - w2;
+
+	return normalizeDepth((p1 * w1 + p2 * w2 + p3 * w3).z);
+}
+
 Application::Application(const char* caption, int width, int height)
 {
 	this->window = createWindow(caption, width, height);
@@ -39,12 +69,13 @@ void Application::init(void)
 
 	//load a mesh
 	mesh = new Mesh();
-	if( !mesh->loadOBJ("woman.obj") )
+	if( !mesh->loadOBJ("lee.obj") )
 		std::cout << "FILE Lee.obj NOT FOUND" << std::endl;
 }  
 
 //render framebuffer
 Image framebuffer(800, 800);
+FloatImage zbuffer(800,800);
 
 //render one frame
 void Application::render(void)
@@ -53,6 +84,14 @@ void Application::render(void)
 	//float yRatio = fabs(1 - (-1)) / fabs(this->window_height - 0);
 
 	framebuffer.fill(Color(40, 45, 60 )); //pale blue
+
+	for (int i = 0; i < 800; i++)
+	{
+		for (int j = 0; j < 800; j++)
+		{
+			zbuffer.setPixel(i, j, INT_MAX);
+		}
+	}
 
 	//for every point of the mesh (to draw triangles take three points each time and connect the points between them (1,2,3,   4,5,6,   ... )
 	for (int i = 0; i != mesh->vertices.size(); ++i)
@@ -99,9 +138,9 @@ void Application::render(void)
 		}
 	}
 
-	Vector2 tri0;
-	Vector2 tri1;
-	Vector2 tri2;
+	Vector3 tri0;
+	Vector3 tri1;
+	Vector3 tri2;
 
 	for (std::vector<Vector2>::size_type i = 0; i < points.size(); ++i) 
 	{
@@ -119,6 +158,7 @@ void Application::render(void)
 		{
 			tri2.x = points[i].x;
 			tri2.y = points[i].y;
+
 			framebuffer.drawTriangleBarycenter(tri0.x, tri0.y, tri1.x, tri1.y, tri2.x, tri2.y, Color::RED, Color::GREEN, Color::BLUE);
 		}
 	}
@@ -137,24 +177,39 @@ void Application::update(double seconds_elapsed)
 		//...
 	}
 
-	//example to move eye
-	if (keystate[SDL_SCANCODE_LEFT])
-		camera->eye.x -= 5 * seconds_elapsed;
-	if (keystate[SDL_SCANCODE_RIGHT])
-		camera->eye.x += 5 * seconds_elapsed;
 	if (keystate[SDL_SCANCODE_UP])
-		camera->eye.z -= 5 * seconds_elapsed;
+	{
+		camera->eye.y -= 5 * seconds_elapsed;
+	}
 	if (keystate[SDL_SCANCODE_DOWN])
-		camera->eye.z += 5 * seconds_elapsed;
+	{
+		camera->eye.y += 5 * seconds_elapsed;
+	}
+	if (keystate[SDL_SCANCODE_LEFT])
+	{
+		camera->eye.x += 5 * seconds_elapsed;
+	}
+	if (keystate[SDL_SCANCODE_RIGHT])
+	{
+		camera->eye.x -= 5 * seconds_elapsed;
+	}
 
 	if (keystate[SDL_SCANCODE_A])
+	{
 		camera->center.x -= 5 * seconds_elapsed;
+	}
 	if (keystate[SDL_SCANCODE_D])
+	{
 		camera->center.x += 5 * seconds_elapsed;
+	}
 	if (keystate[SDL_SCANCODE_W])
-		camera->center.z -= 5 * seconds_elapsed;
+	{
+		camera->center.y += 5 * seconds_elapsed;
+	}
 	if (keystate[SDL_SCANCODE_S])
-		camera->center.z += 5 * seconds_elapsed;
+	{
+		camera->center.y -= 5 * seconds_elapsed;
+	}
 
 	if (keystate[SDL_SCANCODE_F])
 		camera->fov -= 5 * seconds_elapsed;
