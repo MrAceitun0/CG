@@ -136,11 +136,21 @@ void Application::render(void)
 			finalV.y = finalY;
 			points.push_back(finalV);
 		}
+		else {
+			Vector2 dontShowPoint;
+			dontShowPoint.x = -1;
+			dontShowPoint.y = -1;
+			points.push_back(dontShowPoint);
+		}
 	}
 
 	Vector3 tri0;
 	Vector3 tri1;
 	Vector3 tri2;
+
+	bool brokenPoint1 = false;
+	bool brokenPoint2 = false;
+	bool brokenPoint3 = false;
 
 	for (std::vector<Vector2>::size_type i = 0; i < points.size(); ++i) 
 	{
@@ -148,18 +158,34 @@ void Application::render(void)
 		{
 			tri0.x = points[i].x;
 			tri0.y = points[i].y;
+
+			if (tri0.x == -1 && tri0.y == -1)
+				brokenPoint1 = true;
+			else
+				brokenPoint1 = false;
 		}
 		else if (i % 3 == 1)
 		{
 			tri1.x = points[i].x;
 			tri1.y = points[i].y;
+
+			if (tri1.x == -1 && tri1.y == -1)
+				brokenPoint2 = true;
+			else
+				brokenPoint2 = false;
 		}
 		else if (i % 3 == 2)
 		{
 			tri2.x = points[i].x;
 			tri2.y = points[i].y;
 
-			framebuffer.drawTriangleBarycenter(tri0.x, tri0.y, tri1.x, tri1.y, tri2.x, tri2.y, Color::RED, Color::GREEN, Color::BLUE);
+			if (tri2.x == -1 && tri2.y == -1)
+				brokenPoint3 = true;
+			else
+				brokenPoint3 = false;
+
+			if(!(brokenPoint1 || brokenPoint2 || brokenPoint3))
+				framebuffer.drawTriangleBarycenter(tri0.x, tri0.y, tri1.x, tri1.y, tri2.x, tri2.y, Color::RED, Color::GREEN, Color::BLUE);
 		}
 	}
 	
