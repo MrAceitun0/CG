@@ -10,36 +10,6 @@ using namespace std;
 Mesh* mesh = NULL;
 Camera* camera = NULL;
 
-// normalize the depth in the range [near, far]
-float normalizeDepth(float d)
-{
-	float   rmin = 0, // minimum of the range of depths -- empirically determined
-		rmax = 2147483648, // maximum of the range of depths -- empirically determined
-		tmin = camera->near_plane, // minimum of the range of target scale (near)
-		tmax = camera->far_plane; // maximum of the range of target scale (far)
-
-	return ((d - rmin) / (rmax - rmin)) * (tmax - tmin) + tmin; // just math!
-}
-
-// barycentric interpolation of triangles
-// this is useful to get the depth of every pixel inside the triangle
-float getDepth(Vector3 p1, Vector3 p2, Vector3 p3, unsigned int x, unsigned int y)
-{
-	float w1 = ((p2.y - p3.y) * (x - p3.x) + (p3.x - p2.x) * (y - p3.y)) /
-		((p2.y - p3.y) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.y - p3.y));
-
-	if (w1 < 0) return INT_MAX;
-
-	float w2 = ((p3.y - p1.y) * (x - p3.x) + (p1.x - p3.x) * (y - p3.y)) /
-		((p2.y - p3.y) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.y - p3.y));
-
-	if (w1 < 0) return INT_MAX;
-
-	float w3 = 1 - w1 - w2;
-
-	return normalizeDepth((p1 * w1 + p2 * w2 + p3 * w3).z);
-}
-
 Application::Application(const char* caption, int width, int height)
 {
 	this->window = createWindow(caption, width, height);
@@ -55,7 +25,7 @@ Application::Application(const char* caption, int width, int height)
 	this->keystate = SDL_GetKeyboardState(NULL);
 }
 
-vector<Vector2> points;
+vector<Vector3> points;
 
 //Here we have already GL working, so we can create meshes and textures
 void Application::init(void)
@@ -75,7 +45,6 @@ void Application::init(void)
 
 //render framebuffer
 Image framebuffer(800, 800);
-FloatImage zbuffer(800,800);
 
 //render one frame
 void Application::render(void)
@@ -84,14 +53,6 @@ void Application::render(void)
 	//float yRatio = fabs(1 - (-1)) / fabs(this->window_height - 0);
 
 	framebuffer.fill(Color(40, 45, 60 )); //pale blue
-
-	for (int i = 0; i < 800; i++)
-	{
-		for (int j = 0; j < 800; j++)
-		{
-			zbuffer.setPixel(i, j, INT_MAX);
-		}
-	}
 
 	//for every point of the mesh (to draw triangles take three points each time and connect the points between them (1,2,3,   4,5,6,   ... )
 	for (int i = 0; i != mesh->vertices.size(); ++i)
@@ -131,15 +92,17 @@ void Application::render(void)
 			}
 
 			//paint point in framebuffer
-			Vector2 finalV;
+			Vector3 finalV;
 			finalV.x = finalX;
 			finalV.y = finalY;
+			finalV.z = normalized_point.z;
 			points.push_back(finalV);
 		}
 		else {
-			Vector2 dontShowPoint;
+			Vector3 dontShowPoint;
 			dontShowPoint.x = -1;
 			dontShowPoint.y = -1;
+			dontShowPoint.z = -1;
 			points.push_back(dontShowPoint);
 		}
 	}
