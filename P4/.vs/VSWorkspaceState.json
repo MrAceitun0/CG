@@ -2,7 +2,8 @@
   "ExpandedNodes": [
     "",
     "\\src",
-    "\\src\\framework"
+    "\\src\\framework",
+    "\\src\\main"
   ],
   "SelectedNode": "\\src\\framework\\application.cpp",
   "PreviewInSolutionExplorer": false

@@ -59,10 +59,15 @@ void Application::init(void)
 
 	//load your Gouraud and Phong shaders here
 	//...
-
+	//phongShader = new Shader();
+	//phongShader->load("phong.vs", "phong.ps");
+	//gouraudShader = new Shader();
+	//gouraudShader->load("gouraud.vs", "gouraud.ps");
+	
 	//CODE HERE:
 	//create a light (or several) and a materials
 	//...
+
 }
 
 //render one frame
@@ -97,7 +102,7 @@ void Application::render(void)
 	shader->disable();
 
 	//swap between front buffer and back buffer
-	SDL_GL_SwapWindow(this->window);
+	//SDL_GL_SwapWindow(this->window);
 }
 
 //called after render
